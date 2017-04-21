@@ -1,0 +1,105 @@
+; $VER: Install ACA1233n.library 1.xx (19.01.2017)
+; Installer by Marcus Gerards
+
+;(effect "center" "horizontal" $000000 $00FF00)
+
+(set #exitmsg "\n\nIf you are a developer and wish to use\nACA1233n.library, check out the included\ndocumentation, includes and autodocs.")
+
+; Welcome screen
+
+(welcome "\nThis installer script will install ACA1233n.library and tools.\nACA1233n.library is an interface to all special functions of your turbocard.\n\n")
+
+; Flush
+
+(message "\nBefore proceeding, you must quit all programs using ACA1233n.library (e.g. ACAGov), so that the old version can be flushed from memory.")
+(run "Avail FLUSH")
+
+
+; Copy ACA1233n.library
+
+(copylib
+    (prompt "\nInstalling ACA1233n.library")
+    (help @copyfiles-help)
+    (source "libs/ACA1233n.library")
+    (dest "Libs:")
+    (confirm)
+    (optional "nofail" "force" "askuser")
+)
+
+
+(set destination
+	(askdir 
+		(prompt "\Where do you want to install the tools for your ACA1233n turbocard?\n")
+		(default "Sys:Utilities")
+		(help "\nYou should place the tool in your system's path.\nRecommended are c: or sys:utilities (if you're using it via Workbench).")
+	)
+)	
+
+(message "\nPlease remove older versions manually,\nif you've just chosen a path other than c: or sys:c!")
+
+(copylib
+    (prompt "\nInstalling ACAInfo")
+    (help @copyfiles-help)
+    (source "Tools/ACAInfo")
+    (dest destination)
+    (confirm)
+    (optional "nofail" "force" "askuser")
+)
+(copyfiles
+	(source "Tools/ACAInfo.info")
+	(dest destination)
+)
+
+(copyfiles
+	(prompt "\nInstalling documentation")
+	(help @copyfiles-help)
+	(source "BoardsLib.guide")
+	(dest "SYS:Locale/Help/english/")
+	(infos)
+	(noposition)
+)
+
+; Copy catalogs (locale support)
+;
+;(set #catSourceDir (tackon "Catalogs" @language))
+;(set #catDestDir (tackon "Locale:" (tackon "Catalogs" @language)))
+;(if (= (and (= (exists (#catSourceDir)) 2) (= (exists (#catDestDir)) 2)) 1)
+;    (foreach #catSourceDir "#?"
+;        (copylib
+;            (source (tackon #catSourceDir @each-name))
+;            (dest #catDestDir)
+;        )
+;    )
+;)
+;
+
+
+; Ask MMU variable setting
+
+ (set #mmuconf
+           (askbool
+		(prompt "\nIf you want to use this software with the MMULib package by Thomas Richter, we'll have to create a special config for mmu.library.\nIt will be either created or attached to your existing config in ENVARC:mmu-configuration.\n\Would you like to do this now?\n\n(See help for further info).")
+		(help "\nIf you select \"No\" and install mmu.library later, you'll have to add the line:\n\nSetCacheMode from $47e80000 size 0x0f800 io valid\n\n to  ENVARC:MMU-Configuration")
+		(default 1)
+           )
+  )
+
+  (if #mmuconf
+	(
+; Set MMU Config
+	(run "Echo \"SetCacheMode from $47e80000 size 0x0f800 io valid\n" >> ENVARC:MMU-Configuration")
+  )
+
+  (if (not #mmuconf)
+	(
+; Clear MMU config
+	(run "Echo \"\" >ENVARC:MMU-Configuration")
+  )
+
+(set #guide "Boards.guide")
+(message "\nPlease consult the Guide and modify the \ntooltypes of showboards according to your needs.")
+(run ("Run >NIL: SYS:Utilities/Multiview %s" #guide) (safe))
+
+; Exit
+
+(exit #exitmsg (quiet))
