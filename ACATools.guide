@@ -1,0 +1,578 @@
+@database ACATools.guide
+@width 80
+@wordwrap
+@Node Main "ACATools: Table of contents"
+       
+                                 @{B}ACATools V 1.0@{UB} 
+    
+                                      Author:
+
+                             Marcus Gerards (19-Jan-2017)
+                                    
+                                  written for IComp                    
+                                     
+        
+        
+                            @{B}-- TABLE OF CONTENTS --@{UB}
+
+
+    1. @{" Introduction " link Introduction} ........................... what is it good for? 
+
+    
+    2. @{" Requirements & Installation " link Installation} ............... let's try it out!
+       
+    3. The Tools
+    
+       3.1 @{" ACAInfo " link ACAInfo} ....................... show your card's settings
+       
+       3.2 @{" ACAClock " link ACAClock} .................. hit the brakes or release 'em
+       
+       3.3 @{" ACASwitchCPU " link ACASwitchCPU}................... turn it off (completely)!
+       
+       3.4 @{" ACAGov " link ACAGov} ........... save energy and heat, like a modern PC
+       
+       3.5 @{" ACASwitchC0Mem " link ACASwitchC0Mem} .................. some games hate SlowRam
+       
+       3.6 @{" ACAMapROM " link ACAMapROM} ....... more speed or different ROM? Read this!
+       
+       3.7 @{" ACASetWaitstates " link ACASetWaitstates} .................... for those with FPUs
+       
+       3.8 @{" ACASwitchZ2Mode " link ACASwitchZ2Mode} ................ experience Zorro II mode 
+
+    4. Miscellaneous
+       
+       4.1 @{" Developers " link Developers} ..................... write your own software!
+        
+       4.2 @{" Copyright " link Copyright} ................................... legal stuff
+       
+       4.3 @{" Changelog          " link Changelog}
+@EndNode
+
+@Node Introduction "ACATools: Introduction"
+
+@{B}Introduction @{UB}
+
+The ACATools are a collection of tools to access the advanced functions of the ACA1233n turbocard. By using this tools, you may (partially) switch off your card, change its speed and much more. Some tools will increase the speed of your computer, other are meant to maximize compatibility with very old software or some games.
+
+Please read the documentation carefully to get most out of your card! 
+     
+@EndNode
+
+@Node Installation "ACATools: Installation"
+
+@{B}@{U}Requirements@{UU}@{UB}
+
+All ACATools need ACA1233n.library in installed in LIBS:. They also require Kickstart 3.x and - unsurprisingly - an ACA1233n. Some tools will also work with the ACA1221(EC) and ACA1221.library, so you won't have to install another set of tools if you own both models and swap a lot between them.  
+
+The tools are optional; your card will work without them. However, you should at least use ACAMapROM, since it will give you a nice speed boost with system friendly software and harddisk transfers.
+
+@EndNode
+
+@Node Installation "ACATools: Installation"
+@{B}@{U}Installation@{UU}@{UB}
+
+Automatic:
+
+Use the included installer. Yeah, that's recommended.
+
+
+Manual:
+
+Copy the contents of the ACATools drawer anywhere in your path (e.g. C:). Some tools can be run from Workbench, so you might want to put them into e.g. the Tools-drawer of your Workbench partition. Ah yes, and ACA1233n.library needs to be copied  to libs:, since all tools depend on it.
+
+@EndNode
+
+@Node ACAInfo "ACAInfo"
+
+@{B}@{U}ACAInfo@{UU}@{UB}
+
+@{B}Introduction:@{UB}
+
+ACAInfo is a little tool to display the current settings of your ACA1233n 
+turbocard.
+
+@{B}Description:@{UB}
+    
+ACAInfo not only displays information about the card's settings by default, 
+but can also be used to check for a certain setting, e.g. to test for a 
+specific clock speed or to issue commands in batch scripts if the 030 on the 
+card is en-/disabled. ACAInfo will return RETURN_OK, if all checks are 
+sucessful and RETURN_FALSE, if at least one check fails.The command line 
+options are:
+
+    Q=QUIET/S:          suppresses output. Useful for e.g. startup-sequence
+    
+    CS=CHECKSPEED/K/N:  check for a certain speed stepping
+    
+                        The following speed steppings are available with 
+                        a ACA1233n/40 (speed stepping 4 is reduced with a 
+                        33 MHz card accordingly):
+                        
+                        speed stepping 0:    13.33 MHz
+                        speed stepping 1:    16.00 MHz
+                        speed stepping 2:    20.00 MHz
+                        speed stepping 3:    26.67 MHz
+                        speed stepping 4:    40.00 MHz
+
+    CPU/S:              check if the CPU on the card is active
+    
+
+@EndNode
+
+@Node ACAClock "ACAClock"
+
+@{B}@{U}ACAClock@{UU}@{UB}
+
+@{B}Introduction:@{UB}
+
+ACAClock is a little tool to change the CPU clock of your ACA1221(EC) or
+ACA 1233n turbocard.
+
+Add "C:ACAClock s=3" to your startup-sequence (immediately after ACATune), 
+@{B}if you own an ACA1221(EC)@{UB}. 
+This will clock your card to 28.38 Mhz, if you own the according license. 
+If you don't, read on below.
+
+ACA1233n owners' cards will always start at maximum clock (26.67 MHz or 40 MHz,
+depending on variant). ACAClock is only needed to reduce the speed/lower
+the temperature of this card! Check out the tool "ACAGov" to change clock 
+speeds automatically.  
+
+
+@{B}Description:@{UB}
+    
+ACAClock has the following command line options:
+
+    Q=QUIET/S:            suppress output. Useful for startup-sequence
+    M=MAXSPEED/S:         displays the fastest speed stepping available for
+                          your card
+    C=CURRENTSPEED/S:     displays the current speed stepping
+    S=SETSPEED/K/N:       sets a speed stepping (0-3/4)
+    
+
+@{B}ACA1221(EC):@{UB}
+
+A fully licensed ACA1221 provides four "speed steppings" ranging from 
+0 (9.46 MHz) to 3 (28.38 MHz). Speed step 3 will provide 42 MHz with 
+optional overclocking firmware (reliable active cooling and proper CPU 
+mask needed here as well!)
+    
+The following speed steppings are available with a fully licensed ACA1221:
+
+    speed stepping 0:    9.46 MHz
+    speed stepping 1:    17.03 MHz
+    speed stepping 2:    21.28 MHz
+    speed stepping 3:    28.38 MHz
+
+The card's clock will remain at the selected speed stepping until the next 
+reboot or flip of the power switch. The default speed stepping is 
+1 (17.03 Mhz) for the ACA1221 (non-EC version).
+
+
+@{B}ACA1233n:@{UB}
+    
+The ACA1233n provides five "speed steppings" - the table below is valid for
+a ACA1233n/40 (speed stepping 4 is reduced with a 26 MHz card accordingly):
+
+    speed stepping 0:    13.33 MHz
+    speed stepping 1:    16.00 MHz
+    speed stepping 2:    20.00 MHz
+    speed stepping 3:    26.67 MHz
+    speed stepping 4:    40/26.67 MHz (synchronous memory timing)
+    
+The default speed stepping is 4 (40/26.67 MHz). For 26.67 MHz cards, speed 
+stepping 4 will be slightly faster to stepping 3, because the card's 
+memory will run at the same clock as the CPU in the first case.
+    
+@EndNode
+
+@Node ACASwitchCPU "ACASwitchCPU"
+
+@{B}Introduction:@{UB}
+
+ACASwitchCPU is a little tool to (de-)activate the CPU of your ACA1233n
+turbocard and thus switch to machine's host CPU or back to the 68030 of
+the card.
+
+WARNING:    calling ACASwitchCPU will *always* cause a reboot - finish all disk
+            activity before you run this program! By default, a delay of 
+            10 seconds will happen before the machine resets. 
+
+
+@{B}Description:@{UB}
+    
+ACASwitchCPU can not only switch CPUs, but also disable all memory on the 
+ACA1233n. In case of an A1200, this will leave you with a basic unexpanded 
+machine, providing maximum compatibilty with certain apps/games/demos.
+
+Command line options:
+
+    Q=QUIET/S:          suppresses output. Useful for e.g. startup-sequence
+    
+    C=CPU/K/N:          check for a certain CPU and only perform the switch, 
+                        if the check is successful. Valid parameters are:
+                        68030,68020 and 68000.
+                        
+    N=NOWAIT/S:         suppresses the default 10 seconds delay before the 
+                        switch and will cause an immediate reboot. 
+                        Not recommended!
+    
+    D=DELAY/K/N:        You may increase the default delay of 10 seconds by
+                        setting this parameter here (maximum is 60 seconds).
+                        You may also use this option to reduce the delay, but 
+                        this is not recommended.
+                        
+    NM=NOMEMCARD/S:     Setting this option will disable the card's memory.
+                        If you did already switch it off before, it will be
+                        enabled again.
+    
+@EndNode
+
+@Node ACAGov "ACAGov"
+
+@{B}Introduction:@{UB}
+
+ACAGov enables you to set your CPU clock of your ACA1221(EC) or ACA1233n 
+turbocard depending on the your system's current load. If you're e.g. 
+decompressing a JPEG or decrunching an archive, you card's clock will rise 
+to the maximum and - after the job is done - sink back to the minimum clock 
+speed specified. That's basically what all modern AMD or Intel CPUs do and 
+it's now available for the first time on classic Amiga systems.
+
+A fully licensed ACA1221 provides three "speed steppings" ranging 
+from 0 (9.46 MHz) to 3 (28.38 MHz), while the ACA1233n always provides 4 
+speed steppings from 13.00 to 26.67/40.00 MHz (the latter depending on card
+model). To control the behaviour of ACAGov, some command line arguments have 
+been provided. But let's start with a little example for the ACA1221:
+    
+    ACAGov I=500 MAX=3 MIN=1 UT=60 LT=30 A
+
+This command will check your CPU's load every 500 milliseconds, raise the
+clock speed up to speed stepping 3 (28.38MHz) if the load exceeds 60% or 
+lower the clock speed down to speed stepping 1 (17.03 MHz) if the load 
+is less than 30%. All actions will be printed to the shell, so you can 
+play around with your setup and fine tune the settings to your needs.
+
+Please keep in mind, that:
+
+    - the output to shell is generating CPU load, especially on screens
+      with many colors or when setting low INTERVAL values. You can 
+      supress it with the argument Q (QUIET), which you should always
+      use in scripts, e.g. the startup-sequence.
+    - ACAGov will only change speed stepping, if argument A (AUTOCLOCK)
+      is provided.
+    - even if your system seems idle, CPU load will seldom fall below 
+      20%. Keep this in mind when setting LT (LOWERTHRESHOLD).
+    - if you want to start ACAGov at boot time, put it into your
+      startup-sequence after ACATune and spawn it with:
+      
+      "run > nil: c:ACAGov QUIET [add your arguments here]" 
+    
+    - to stop ACAGov, simply launch it again. If you started it from shell 
+      without "run", simply activate the according shell window and press 
+      CTRL-C. (yes, you can also stop it via the "break" command") 
+      
+
+The following speed steppings are available with a fully licensed ACA1221:
+
+    speed stepping 0:    9.46 MHz
+    speed stepping 1:    17.03 MHz
+    speed stepping 2:    21.28 MHz
+    speed stepping 3:    28.38 MHz
+
+@{B}ACA1233n:@{UB}
+    
+The ACA1233n provides five "speed steppings" - the table below is valid for
+a ACA1233n/40 (speed stepping 4 is reduced with a 26 MHz card accordingly):
+
+    speed stepping 0:    13.33 MHz
+    speed stepping 1:    16.00 MHz
+    speed stepping 2:    20.00 MHz
+    speed stepping 3:    26.67 MHz
+    speed stepping 4:    40/26.67 MHz (synchronous memory timing)
+    
+The default speed stepping is 4 (40/26.67 MHz). For 26.67 MHz cards, speed 
+stepping 4 will be slightly faster to stepping 3, because the card's 
+memory will run at the same clock as the CPU in the first case.
+    
+      
+Overview of arguments:
+
+    Q=QUIET/S                - suppresses output
+                               default: disabled
+                              
+    A=AUTOCLOCK/S            - enables automatic clock control by ACAGov
+                               default: disabled
+                              
+    UT=UPPERTHRESHOLD/K/N    - if your CPU load (in %) passes over this 
+                               threshold, ACAGov will raise the clock 
+                               speed stepping by one step
+                               default: 70 (%)
+                              
+    LT=LOWERTHRESHOLD/K/N    - if your CPU load (in %) falls below this 
+                               threshold, ACAGov will lower the clock 
+                               speed stepping by one step
+                               default: 50 (%)
+                              
+    I=INTERVAL/K/N           - the measurement interval in 1/1000 second
+                               default: 200 (= 1/5 second)
+                              
+    MAX=MAXSTEP/K/N          - if AUTOCLOCK is enabled, ACAGov may increase
+                               the clock speed stepping up to this value
+                               default: 3 (28.38 MHz)
+                              
+    MIN=MINSTEP/K/N          - if AUTOCLOCK is enabled, ACAGov may decrease
+                               the clock speed stepping down to this value
+                               default: 0 (9.46 MHz)
+
+
+
+@EndNode
+
+@Node ACASwitchC0Mem "ACASwitchC0Mem"
+
+@{B}Introduction:@{UB}
+
+ACASwitchC0Mem is a little tool to turn off/on 1 MB of memory starting at 
+0xC00000 (SlowRAM area).
+
+
+WARNING:    calling ACASwitchC0Mem will *always* cause a reboot - finish all 
+            disk activity before you run this program! By default, a delay of 
+            10 seconds will happen before the machine resets. 
+
+
+@{B}Description:@{UB}
+    
+Disabling the memory region 0x0c00000 to 0x0cfffff, also known as "Slow RAM" to
+maximizes compatibility with old software or DMA devices which use the lower 
+16M address space (like A2091 or GVP controllers). The tool will therefore only 
+useful, if you want to combine such cards with an ACA2000/ACA1233n combo in an
+A2000, an A1200 with a ZII-busboard or an A500 with ACA500(+)/ACA1233n and a 
+Zorro-adaptor.
+  
+Note: Only the aforementioned 1 MB of memory will be dis/-enabled - the FastMem 
+on the ACA1233n is not affected by this command. Running the command without 
+options will return the current status of the memory chunk.
+
+Command line options:
+
+    Q=QUIET/S:          suppresses output. Useful for e.g. startup-sequence
+                    
+    N=NOWAIT/S:         suppresses the default 10 seconds delay before the 
+                        switch and will cause an immediate reboot. 
+                        Not recommended!
+    
+    D=DELAY/K/N:        You may increase the default delay of 10 seconds by
+                        setting this parameter here (maximum is 60 seconds).
+                        You may also use this option to reduce the delay, but 
+                        this is not recommended.
+    
+    ON/S:               Switches on C0-memory. If the memory is already active,
+                        the command will exit with RETURN_WARN.
+                        
+    OFF/S:              Switches off C0-memory. If the memory has already been
+                        disabled, the command will exit with RETURN_WARN.
+                        
+                        
+@EndNode
+
+@Node ACAMapROM "ACAMapROM"
+
+@{B}Introduction:@{UB}
+
+ACAMapROM is a little tool to map the internal Kickstart ROM of your machine or
+any other compatible kickstart image to the 32bit RAM of your ACA1233n.
+
+@{B}Quickstart:@{UB}
+If you don't want to use custom kickstart ROMs, just add 
+
+     <yourpath>ACAMapROM I
+
+as first command to your s:startup-sequence. Replace <path> with the actual 
+filepath, e.g. if your installed ACAMapROM to sys:utlilities, you will have
+to write
+
+     sys:utilities/ACAMapROM I
+
+
+@{B}Description:@{UB}
+    
+ACAMapROM currently supports 512KB and 1MB Kickstart ROM images. It must be run 
+from shell, as first command of your startup-sequence. If you don't want to map
+a custom kickstart, you should at least use the option "I" to map the contents 
+of your physical Kickstart ROM to 32bit RAM, speeding up the execution of 
+system routines (most notably file accesses) significantly. 
+
+Furthermore, it supports the following command line options:
+
+    Q=QUIET/S:            suppresses output. Useful for e.g. startup-sequence
+    
+    FILE:                 path to Kickstart ROM image; default is the internal
+                          ROM.
+    
+    I=MAPINT/S:           map the internal Kickstart ROM to RAM. You won't lose 
+                          any FastRAM by using this! Can be used without a 
+                          reboot and gives a nice speed boost instantly.
+    
+    R=MAPREMOVE/S:        Remove the mapped ROM and switch back to your 
+                          machine's built-in ROM. Will cause a reboot, if the 
+                          mapped ROM is not identical with the physical one.
+    
+
+@EndNode
+
+@Node ACASetWaitstates "ACASetWaitstates"
+
+@{B}Introduction:@{UB}
+
+ACASetWaitstates is a little tool to set the number of waitstates for
+memory access of your ACA1233n turbocard (hence the name).
+
+A stock ACA1233n comes without a CPU and will start up with 0 waitstates. If
+the user mounts a CPU on the card, the setting will change to 1 waitstate by
+default, resulting in slightly slower memory accesses (you problably won't
+notice, though). You may then manually reduce the number of waitstates back to
+0 by using this tool and test out if your machine will still run stable.
+
+
+@{B}Quickstart:@{UB}
+
+Call "ACASetWaitstates [number of waitstates]. The setting can be changed on the
+fly and you won't need a reboot.
+
+
+Command line options:
+
+    Q=QUIET/S:           suppresses output. Useful for e.g. startup-sequence
+    
+    W=WAITSTATES/K/N:    set number of waitstates. Valid settings are: 0 & 1
+    
+
+@EndNode
+
+@Node ACASwitchZ2Mode "ACASwitchZ2Mode"
+
+@{B}Introduction:@{UB}
+
+ACASwitchZ2Mode is a little tool to disable Z3 memory autoconfig. 
+
+WARNING:    calling ACASwitchZ2Mode will *optionally* cause a reboot - finish
+            all disk activity before you run this program! By default, you 
+            will have to reset the machine manually.
+
+@{B}Description:@{UB}
+    
+You need this tool to provide compatibility with older Kickstart ROMs (1.3 and 
+earlier) which only support Z2 memory autoconfig. After a reboot, the card will 
+start with 9 MB usable Fast Memory.
+
+Note: 
+
+The remaining 114 + 4 MB of memory are still available. You can add them 
+manually in Z2 mode with one of the various AddMem-tools (see e.g. Aminet).
+Add the region $4000.0000 to 471f.ffff (114 MB) and $47a0.0000 to $47df.ffff
+(4 MB) to the freemem list.
+
+Note 2: 
+On a heavily patched system or if using ACAMapROM, you must put ACASwitchZ2Mem
+on top of your startup-sequence. Otherwise your system can be caught in a 
+boot loop. You may switch back to Zorro III anytime, but the system might greet
+you with a guru message right after the next reset. This is normal, since you
+just cut the branch all Kickstart ROM patches might be sitting on - afterwards
+the system will continue booting.  
+  
+Command line options:
+
+    Q=QUIET/S:          suppresses output. Useful for e.g. startup-sequence
+                    
+    N=NOWAIT/S:         suppresses the default 10 seconds delay before the 
+                        switch (only if "REBOOT" has been specified as well)
+                        and will cause an immediate reboot. Not recommended!
+    
+    D=DELAY/K/N:        You may increase the default delay of 10 seconds by
+                        setting this parameter here (maximum is 60 seconds).
+                        You may also use this option to reduce the delay, but 
+                        this is not recommended.
+    
+    Z2/S:               Switches to Z2-mode. If this mode is already active,
+                        the command will exit with RETURN_WARN.
+                        
+                        Again: Switching to Z2 will only be successful directly 
+                        after reset, e.g. as first command in/booting without
+                        startup-sequence. 
+                        
+    Z3/S:               Switches (back) to Z3-mode. If this mode is already 
+                        active, the command will exit with RETURN_WARN.
+
+    REBOOT/S:           Causes a reboot after DELAY. You will otherwise have 
+                        to reset the machine manually.                     
+
+@EndNode
+
+@Node Developers "ACATools: Developers"
+@{B}Developers@{UB}
+
+All ACATools depend on ACA1221.library/ACA1233n.library. You may find the includes &
+autodocs of the library in the developers folder of this archive. 
+
+The source code of all the ACATools is supplied with this archive - check the 
+subfolder "examples". It compiles with SAS/C, other compilers may need modifications.
+
+Go and write your own ACATune, finally! :)
+
+@EndNode
+
+
+
+
+@Node Copyright "ACATools: Copyright"
+
+@{B}@{U}DISCLAIMER / COPYRIGHT@{UU}@{UB}
+
+This software has been written by Marcus Gerards. You are not allowed to modify the programmes and documentation in any way. 
+
+
+@{B}@{U}DISTRIBUTION@{UU}@{UB}
+
+This package is copyrighted by Marcus Gerards. It may only be redristibuted by either its author or IComp.
+
+
+@{B}@{U}DISCLAIMER@{UB}@{UU}
+
+  THERE IS NO LIABILITY TO THIS PROGRAM-PACKAGE,IN REFERENCE TO THE
+  ASSERTED LAWS. THE COPYRIGHT OWNERS, AND/OR A  THIRD PARTY, PLACE
+  THIS PROGRAM PACKAGE AT YOUR DISPOSAL "AS  IS" (EXCEPT WHERE THIS
+  IS FIXED ANYWHERE ELSE IN A WRITTEN WAY) WITHOUT ANY GUARANTEE IN
+  ANY  FORM (INDIRECT OR DIRECT FORM). THE FULL RISK OF QUALITY AND
+  FUNCTIONALITY  OF THIS PROGRAM IS AT YOUR OWN. IF THE PROGRAM HAS
+  A BUG, YOU HAVE TO PAY  ALL COSTS  OF THE NECESSARY SERVICE-WORKS
+  AND REPAIRS FOR YOURSELF.
+
+  UNDER  NO  CIRCUMSTANCES,  THE  COPYRIGHT OWNERS OR A THIRD PARTY 
+  DISTRIBUTING THIS PROGRAM PACKAGE, AS ALLOWED, JUST  BEFORE,  CAN
+  NOT  BE  HELD  RESPONSIBLE  FOR  ANY  DAMAGE CAUSED IN ANY USUAL,
+  SPECIAL, OR ACCIDENTAL WAY OR BY THE PROGRAM PACKAGE (SURROUNDING
+  BUT NOT RESTRICTED ARE THE LOSS OF DATA OR NOTCORRECTLY DISPLAYED
+  DATA OR LOSSES CAUSED BY YOU OR A THIRD PARTY OR BY A FAULTY WORK
+  OF THIS PROGRAM PACKAGE  WITH  OTHER PROGRAMS), ALSO IF THE OWNER
+  OR A THIRD PARTY HAS BEEN POINTED AT SUCH POSSIBILITIES OF DAMAGE.
+
+@EndNode
+
+@Node Changelog "ACATools: Changelog"
+
+@{U}@{B}Changelog@{UB}@{UU}
+
+Version information:
+
+This release has been developed and tested on various Amiga hardware, both 
+real and emulated, but may contain bugs, crash your machine and frighten your
+cat. 
+
+@{B}V1.0:@{UB}
+ 
+- initial release (finally)
+
+@EndNode
+
