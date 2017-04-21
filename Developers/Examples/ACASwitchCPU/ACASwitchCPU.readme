@@ -1,0 +1,58 @@
+
+ACASwitchCPU README  06/Aug/2016
+
+Introduction:
+
+ACASwitchCPU is a little tool to (de-)activate the CPU of your ACA1233n
+turbocard and thus switch to machine's host CPU or back to the 68030 of
+the card.
+
+
+Requirements:
+
+	- an ACA1233n (obviously)
+	- ACA1233n.library in libs: (supplied with this archive)
+
+
+Quickstart:
+
+Copy ACA1233n.library to libs:, ACASwitchCPU to c: or elsewhere in your path.
+
+WARNING:	calling ACASwitchCPU will *always* cause a reboot - finish all disk
+			activity before you run this program! By default, a delay of 
+			10 seconds will happen before the machine resets. 
+
+
+Description:
+	
+ACASwitchCPU can not only switch CPUs, but also disable all memory on the 
+ACA1233n. In case of an A1200, this will leave you with a basic unexpanded 
+machine, providing maximum compatibilty with certain apps/games/demos.
+
+Command line options:
+
+	Q=QUIET/S:			suppresses output. Useful for e.g. startup-sequence
+	
+	C=CPU/K/N:			check for a certain CPU and only perform the switch, 
+						if the check is successful. Valid parameters are:
+						68030,68020 and 68000.
+						
+	N=NOWAIT/S:			suppresses the default 10 seconds delay before the 
+						switch and will cause an immediate reboot. 
+						Not recommended!
+	
+	D=DELAY/K/N:		You may increase the default delay of 10 seconds by
+						setting this parameter here (maximum is 60 seconds).
+						You may also use this option to reduce the delay, but 
+						this is not recommended.
+						
+	NM=NOMEMCARD/S:		Setting this option will disable the card's memory.
+						If you did already switch it off before, it will be
+						enabled again.
+	
+
+Developers:
+
+ACASwitchCPU depends on ACA1233n.library. The source code is supplied with this 
+archive. It compiles with SAS/C, other compilers may need modifications.
+

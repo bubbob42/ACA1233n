@@ -1,0 +1,73 @@
+
+ACASwitchZ2Mode  README  17/Aug/2016
+
+Introduction:
+
+ACASwitchZ2Mode is a little tool to disable Z3 memory autoconfig. 
+
+Requirements:
+
+	- an ACA1233n (obviously)
+	- ACA1233n.library in libs: (supplied with this archive)
+
+
+Quickstart:
+
+Copy ACA1233n.library to libs:, ACASwitchZ2Mode to c: or elsewhere in your path.
+
+WARNING:	calling ACASwitchZ2Mode will *optionally* cause a reboot - finish
+            all disk activity before you run this program! By default, you 
+            will have to reset the machine manually.
+
+Description:
+	
+You need this tool to provide compatibility with older Kickstart ROMs (1.3 and 
+earlier) which only support Z2 memory autoconfig. After a reboot, the card will 
+start with 9 MB usable Fast Memory.
+
+Note: 
+
+The remaining 114 + 4 MB of memory are still available. You can add them 
+manually in Z2 mode with one of the various AddMem-tools (see e.g. Aminet).
+Add the region $4000.0000 to 471f.ffff (114 MB) and $47a0.0000 to $47df.ffff
+(4 MB) to the freemem list.
+
+Note 2: 
+On a heavily patched system or if using ACAMapROM, you must put ACASwitchZ2Mem
+on top of your startup-sequence. Otherwise your system can be caught in a 
+boot loop. You may switch back to Zorro III anytime, but the system might greet
+you with a guru message right after the next reset. This is normal, since you
+just cut the branch all Kickstart ROM patches might be sitting on - afterwards
+the system will continue booting.  
+  
+Command line options:
+
+	Q=QUIET/S:			suppresses output. Useful for e.g. startup-sequence
+					
+	N=NOWAIT/S:			suppresses the default 10 seconds delay before the 
+						switch (only if "REBOOT" has been specified as well)
+						and will cause an immediate reboot. Not recommended!
+	
+	D=DELAY/K/N:		You may increase the default delay of 10 seconds by
+						setting this parameter here (maximum is 60 seconds).
+						You may also use this option to reduce the delay, but 
+						this is not recommended.
+	
+	Z2/S:				Switches to Z2-mode. If this mode is already active,
+	                    the command will exit with RETURN_WARN.
+	                    
+	                    Again: Switching to Z2 will only be successful directly 
+	                    after reset, e.g. as first command in/booting without
+	                    startup-sequence. 
+	                    
+	Z3/S:				Switches (back) to Z3-mode. If this mode is already 
+						active, the command will exit with RETURN_WARN.
+
+	REBOOT/S:			Causes a reboot after DELAY. You will otherwise have 
+						to reset the machine manually. 					
+						
+Developers:
+
+ACASwitchZ2Mode depends on ACA1233n.library. The source code is supplied with 
+this archive. It compiles with SAS/C, other compilers may need modifications.
+

@@ -1,0 +1,61 @@
+
+ACASwitchC0Mem  README  10/Aug/2016
+
+Introduction:
+
+ACASwitchC0Mem is a little tool to turn off/on 1 MB of memory starting at 
+0xC00000 (SlowRAM area).
+
+Requirements:
+
+	- an ACA1233n (obviously)
+	- ACA1233n.library in libs: (supplied with this archive)
+
+
+Quickstart:
+
+Copy ACA1233n.library to libs:, ACASwitchC0Mem to c: or elsewhere in your path.
+
+WARNING:	calling ACASwitchC0Mem will *always* cause a reboot - finish all 
+			disk activity before you run this program! By default, a delay of 
+			10 seconds will happen before the machine resets. 
+
+
+Description:
+	
+Disabling the memory region 0x0c00000 to 0x0cfffff, also known as "Slow RAM" to
+maximizes compatibility with old software or DMA devices which use the lower 
+16M address space (like A2091 or GVP controllers). The tool will therefore only 
+useful, if you want to combine such cards with an ACA2000/ACA1233n combo in an
+A2000, an A1200 with a ZII-busboard or an A500 with ACA500(+)/ACA1233n and a 
+Zorro-adaptor.
+  
+Note: Only the aforementioned 1 MB of memory will be dis/-enabled - the FastMem 
+on the ACA1233n is not affected by this command. Running the command without 
+options will return the current status of the memory chunk.
+
+Command line options:
+
+	Q=QUIET/S:			suppresses output. Useful for e.g. startup-sequence
+					
+	N=NOWAIT/S:			suppresses the default 10 seconds delay before the 
+						switch and will cause an immediate reboot. 
+						Not recommended!
+	
+	D=DELAY/K/N:		You may increase the default delay of 10 seconds by
+						setting this parameter here (maximum is 60 seconds).
+						You may also use this option to reduce the delay, but 
+						this is not recommended.
+	
+	ON/S:				Switches on C0-memory. If the memory is already active,
+	                    the command will exit with RETURN_WARN.
+	                    
+	OFF/S:				Switches off C0-memory. If the memory has already been
+						disabled, the command will exit with RETURN_WARN.
+						
+						
+Developers:
+
+ACASwitchC0Mem depends on ACA1233n.library. The source code is supplied with 
+this archive. It compiles with SAS/C, other compilers may need modifications.
+

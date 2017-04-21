@@ -1,0 +1,438 @@
+TABLE OF CONTENTS
+
+ACA1233n.library/ACA1233_DisableC0Mem
+ACA1233n.library/ACA1233_GetCurrentSpeed
+ACA1233n.library/ACA1233_GetMaxSpeed
+ACA1233n.library/ACA1233_GetStatus
+ACA1233n.library/ACA1233_MapROM
+ACA1233n.library/ACA1233_SetSpeed
+ACA1233n.library/ACA1233_SetWaitstates
+ACA1233n.library/ACA1233_SwitchCPU
+ACA1233n.library/ACA1233_SwitchZ2Compat
+ACA1233n.library/ACA1233_DisableC0Mem      
+
+
+ACA1233n.library/ACA1233_DisableC0Mem
+
+   NAME
+        ACA1233_DisableC0Mem() - turn off/back on 1 MB of memory starting
+        at 0xC00000
+
+   SYNOPSIS
+        success = ACA1233_DisableC0Mem(switch);
+        d0                             d0
+
+        BOOL ACA1233_DisableC0Mem(UBYTE);
+
+   FUNCTION
+        Turns off/on the memory region 0x0c00000 to 0x0cfffff, also known as
+        "Slow RAM" to maximize compatibility with old software or DMA devices
+        which use the lower 16M address space (like A2091 or GVP controllers).
+
+   INPUTS
+        "AC_NOC0MEM" or "AC_C0MEM" (UBYTE)
+
+   RESULT
+        success - TRUE, if the card accepts the setting, otherwise FALSE.
+        You will obviously only be able to check for FALSE (see NOTES).
+
+   EXAMPLE
+        Printf("Turbocard's processor will be disabled in 10 seconds -");
+        Printf("Finish all disk activity NOW!\n");
+        Delay(500);
+
+        ACA1233_DisableC0Mem(AC_NOC0MEM);
+
+   NOTES
+        Calling this function will also cause an immediate reboot. Warn the
+        user!
+        And well, the "0" in "C0" is a zero. ;-)
+
+   BUGS
+        None known
+
+   SEE ALSO
+        libraries/ACA1233n.h
+
+
+ACA1233n.library/ACA1233_GetCurrentSpeedACA1233n.library/ACA1233_GetCurrentSpeed
+
+    NAME
+        ACA1233_GetCurrentSpeed -- determine the current speed values
+                                   of the card
+
+   SYNOPSIS
+        speedinfo = GetCurrentSpeed()
+        D0
+
+        struct ACA1233ClockInfo *ACA1233_GetCurrentSpeed(void);
+
+   FUNCTION
+        Read current speed setting of the card. Returns a pointer to
+        an internal library structure. Both actual clock value
+        (STRPTR) and speed stepping (UWORD) will be returned.													*
+
+   INPUTS
+        none
+
+   RESULT
+        speedinfo - pointer to struct ACA1233ClockInfo (see ACA1233n.h) or NULL
+
+   EXAMPLE
+        struct ACA1233ClockInfo *ACASpeed = NULL:
+
+        ACASpeed = ACA1233_GetCurrentSpeed();
+
+        Printf("My current speed stepping is %ld (%s)",
+                  ACASpeed->ci_CPUSpeedStep, ACASpeed->ci_CPUClock);
+
+   NOTES
+        Any task accessing the library may call SetSpeed(), so always call
+        GetCurrentSpeed() right before you process the ClockInfo values.
+        This function is a shortcut; you could also obtain the speed values
+        via ACA1233_GetStatus.
+        If the 68030 of the card has been deactivated, the function will
+        always return the clock speed of the host machine's CPU and either a
+        speed stepping of 0 or that of the ACA500+ (if attached, see ACA500+
+        documentation for further information).
+
+   BUGS
+        None known
+
+   SEE ALSO
+        ACA1233_GetMaxSpeed(), ACA1233_SetSpeed(), ACA1233_GetStatus,
+        libraries/ACA1233n.h
+
+
+ACA1233n.library/ACA1233_GetMaxSpeed        ACA1233n.library/ACA1233_GetMaxSpeed
+
+   NAME
+        ACA1233_GetMaxSpeed() - determine the maximum speed of the card
+
+   SYNOPSIS
+        speedinfo =	GetMaxSpeed();
+        D0
+
+        struct ClockInfo *GetMaxSpeed(void);
+
+   FUNCTION
+        Read maximum speed setting of the card. Returns a pointer to
+        an internal library structure. Both actual clock value
+        (STRPTR) and speed stepping (UWORD) will be returned.
+
+   INPUTS
+        none
+
+   RESULT
+        speedinfo - pointer to struct ACA1233ClockInfo (see ACA1233n.h) or NULL
+
+   EXAMPLE
+        struct ACA1233ClockInfo *ACAMaxSpeed = NULL:
+
+        ACAMaxSpeed = ACA1233_GetMaxSpeed();
+
+        Printf("My maximum speed stepping is %ld (%s)",
+                  ACAMaxSpeed->ci_CPUSpeedStep, ACAMaxSpeed->ci_CPUClock);
+
+   NOTES
+        The maximum speed is determined by the CPU of the ACA1233n, regardless
+        if it's currently active or not.
+
+   BUGS
+        None known
+
+   SEE ALSO
+        ACA1233_GetCurrentSpeed(), ACA1233_SetSpeed(), ACA1233_GetStatus()
+        libraries/ACA1233n.h
+
+
+ACA1233n.library/ACA1233_GetStatus            ACA1233n.library/ACA1233_GetStatus
+
+   NAME
+        ACA1233_GetStatus() - return info about the card's settings
+
+   SYNOPSIS
+        status = ACA1233_GetStatus();
+        D0
+
+        struct ACA1233Info *ACA1233_GetStatus(void);
+
+   FUNCTION
+        Reads settings of the card and returns a pointer to an internal
+        library structure.
+
+   INPUTS
+        none
+
+   RESULT
+        status - pointer to struct ACA1233Info (see ACA1233n.h) or NULL
+
+   EXAMPLE
+        struct ACA1233Info *ACAInfo = NULL:
+
+        ACAInfo = ACA1233_GetStatus();
+
+        Printf("MapROM is currently %s\n",
+                  ACAInfo->ai_MapROMStatus ? "enabled" : "not enabled");
+
+   NOTES
+        None
+
+   BUGS
+        None known
+
+   SEE ALSO
+        libraries/ACA1233n.h
+
+
+ACA1233n.library/ACA1233_MapROM                  ACA1233n.library/ACA1233_MapROM
+
+   NAME
+        ACA1233_MapROM() - Maps/unmaps Kickstart ROM to/from FastRAM
+
+   SYNOPSIS
+        success = ACA1233_MapROM(file, option);
+        D0                       D0    D1
+
+        BOOL ACA1233_MapROM(STRPTR, LONG);
+
+   FUNCTION
+        Maps Kickstart ROM to the contents of a file which will be copied to
+        FastRAM beforehand.Supply AR_MAPINT as option argument to use the
+        internal physical Kickstart ROM as the source or supply AR_MAPREMOVE to
+        deactivate the MapROM feature. If you supply an option, "file" should
+        be NULL, but will be ignored anyway.
+
+   INPUTS
+        file   - pointer to a filenameor NULL
+        option - one of the options AR_MAPREMOVE, ARMAPINT
+
+   RESULT
+        success - TRUE, if the card accepts the setting, otherwise FALSE.
+
+   EXAMPLE
+        BOOL success = FALSE;
+        STRPTR file = "kickstart.rom";
+        ...
+
+        success = ACA1233_MapROM(file, 0);
+
+        if (success) {
+            Printf("Contents of the file have been mapped as Kickstart ROM\n");
+        }
+
+   NOTES
+        V1.0 of the lib contains an incomplete implementation and handles only
+        mapping of the machine's internal ROM. Thus any argument will be
+        overwritten by AR_MAPINT.
+
+   BUGS
+        Mapping the ROM while the card's CPU is not active is currently not
+        supported. You must map the ROM in 030 mode and then switch off the
+        CPU.
+
+   SEE ALSO
+        libraries/ACA1233n.h
+
+
+ACA1233n.library/ACA1233_SetSpeed              ACA1233n.library/ACA1233_SetSpeed
+
+   NAME
+        ACA1233_SetSpeed - changes the current speed setting of the card
+
+   SYNOPSIS
+        Success = ACA1233_SetSpeed(speedStepping);
+        D0                         D0
+
+        BOOL ACA1233_SetSpeed(UBYTE);
+
+   FUNCTION
+        Change the current speed setting of the card to the supplied stepping.
+        The setting is in effect until the next flip of the power switch.
+
+   INPUTS
+        speedStepping   - binary value, the ACA1233n supports (depending on
+                          the fitted CPU) stepping 0-3, which correspond to
+                          the following clock values:
+
+                          0: 13.33 MHz
+                          1: 16.00 MHz
+                          2: 20.00 MHz
+                          3: 26.67 MHz
+                          4: 40.00 MHz
+
+   RESULT
+        success - TRUE, if the card accepts the setting, otherwise FALSE. You
+                  may verify this by calling ACA1233_GetCurrentSpeed(), but
+                  only in 68030 mode, since it will return the host machine's
+                  secondary CPU's speed while the ACA1233n's CPU is
+                  deactivated. (Lots of genitive forms over here...)
+
+   EXAMPLE
+        BOOL success = FALSE;
+        UBYTE mySpeed = 2;
+
+        success = ACA1233_SetSpeed(mySpeed);
+
+        if (success) {
+            Printf("My speed stepping has been set to %ld\n", mySpeed);
+        }
+
+   NOTES
+        The maximum speed available is determined by CPU fitted to the card.
+        This function will always return FALSE while the CPU of the card is
+        deactivated.
+
+        You may call the function anytime without the need to disable
+        multitasking. Other tasks (e.g. formatting disks, etc.) will not be
+        disturbed.
+
+   BUGS
+        Well, it's technically possible to "preprogram" the speed of the card
+        while the card's CPU is switched off. But since that does not make
+        much sense, it has not been implemented.
+
+   SEE ALSO
+        ACA1233_GetCurrentSpeed(), ACA1233_GetMaxSpeed(), libraries/ACA1233n.h
+
+
+ACA1233n.library/ACA1233_SetWaitstates    ACA1233n.library/ACA1233_SetWaitstates
+
+   NAME
+        ACA1233_SetWaitstates() - sets the number of write waitstates
+
+   SYNOPSIS
+        success = ACA1233_SetWaitstates(waitstates);
+        D0                              D0
+
+        BOOL ACA1233_SetWaitstates(UBYTE);
+
+   FUNCTION
+        The SD-RAM controller of the ACA1233n can be configured to operate
+        with 0-waitstate or with 1-waitstate. Write performance is
+        significantly higher with 0-waitstate, but timing is very tight and
+        might get instable if an FPU is installed, the power supply is not
+        absolutely stable or environmental conditions are difficult for the
+        card (e.g. excessive heat).
+        Timing on power-up will be set to 0-waitstate if there is no FPU
+        installed, and it will be set to 1-waitstate if an FPU is installed.
+        This function allows to control this behaviour manually - valid
+        values for "waitstates" are AW_NOWAITSTATE and AW_WAITSTATE.
+
+   INPUTS
+        none
+
+   RESULT
+        success - TRUE, if the card accepts the setting, otherwise FALSE.
+
+   EXAMPLE
+        BOOL success = FALSE;
+
+        success = ACA1233_SetWaitstates(0);
+
+        if (success) {
+            Printf("No more waitstates for writes!\n");
+        }
+
+   NOTES
+        This function can used at any time, regardless of FPU presence.
+        The effect is instant.
+
+   BUGS
+        None known
+
+   SEE ALSO
+
+ACA1233n.library/ACA1233_SwitchCPU            ACA1233n.library/ACA1233_SwitchCPU
+
+   NAME
+        ACA1233_SwitchCPU() - disable or (re-)enable the card's CPU
+
+   SYNOPSIS
+        ACA1233_SwitchCPU(option);
+
+        VOID ACA1233_SwitchCPU(BYTE);
+
+   FUNCTION
+        Disable/enable the card's processor and thus - depending on whether
+        your machine is an A1200 or A500 - switch to either the internal
+        68EC020 of the A1200 or the 68000 of the ACA500(+). If the 68030 has
+        already been switched off, calling the function again will turn it
+        back on again.
+
+   INPUTS
+        The card's memory can be switched off or back on together with the CPU.
+        Provide AS_MEMCARDON or AS_MEMCARDOFF as option accordingly.
+
+   RESULT
+        returns FALSE if user specifies AS_MEMCARDOFF with a firmware V1 card
+
+   EXAMPLE
+        Printf("Turbocard's processor will be disabled in 10 seconds - ");
+        Printf("the card's memory will be (re-)enabled. "
+        Printf("Finish all disk activity NOW!\n");
+        Delay(500);
+
+        ACA1233_SwitchCPU(AS_MEMCARDON);
+
+   NOTES
+        Calling this function will also cause an immediate reboot. Warn the
+        user!
+
+        NoMemCard-option is broken for firmware V1 cards. Contact IComp for
+        firmware upgrade! For newer revisions, activating NoMemCard
+        currently is a one way ticket; you want to get your FastMem back?
+
+        "Did you try turning it off and back on again?"
+
+
+   BUGS
+        none known
+
+   SEE ALSO
+
+ACA1233n.library/ACA1233_SwitchZ2Compat  ACA1233n.library/ACA1233_SwitchZ2Compat
+
+   NAME
+        ACA1233_SwitchZ2Compat() - autoconfig with Z2 memory instead of Z3
+
+   SYNOPSIS
+        success = ACA1233_SwitchZ2Compat(switch);
+        d0                               d0
+
+        BOOL ACA1233_SwitchZ2Compat(UBYTE);
+
+   FUNCTION
+        ACA1233n by default start up with 128MB of autoconfig Zorro III memory
+        starting at $4000.0000. To ensure compatibility with Kickstart ROMs
+        which don't support Z3 autoconfig (1.3 and earlier), that behaviour
+        can be changed via this function. Supplying the argument "AZ_Z2MODE"
+        will turn the card's memory into a 9MB Zorro II memory expansion,
+        starting at $20.0000 after the next reboot.. The rest of the memory
+        can still be added manually with the various addmem-commands available.
+        Supplying the argument "AZ_Z3MODE" will switch back to the default
+        setting.
+
+   INPUTS
+        "AZ_Z2MODE" or "AZ_Z3MODE" (UBYTE)
+
+   RESULT
+        success - TRUE, if the card accepts the setting, otherwise FALSE.
+
+   EXAMPLE
+        BOOL success;
+
+        success = ACA1233_SwitchZ2Compat();
+
+        if (success) {
+            Printf("Zorro 2 mode activated, please reboot!");
+        }
+
+   NOTES
+
+   BUGS
+        None known
+
+   SEE ALSO
+        libraries/ACA1233n.lib
+

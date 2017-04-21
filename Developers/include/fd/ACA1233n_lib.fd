@@ -1,0 +1,13 @@
+##base _ACA1233nBase
+##bias 30
+##public
+ACA1233_GetStatus()()
+ACA1233_GetCurrentSpeed()()
+ACA1233_GetMaxSpeed()()
+ACA1233_SetSpeed(SpeedStep)(d0)
+ACA1233_DisableC0Mem(on_or_off)(d0)
+ACA1233_SwitchCPU(option)(d0)
+ACA1233_SetWaitstates(Waitstate)(d0)
+ACA1233_MapROM(file,option)(d0,d1)
+ACA1233_SwitchZ2Compat(on_or_off)(d0)
+##end
